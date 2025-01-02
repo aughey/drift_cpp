@@ -47,7 +47,7 @@ int main(int, char *[])
         auto parsed = Parser::parse(buffer.c_str(), buffer.length());
 
         // As a pipeline, we reuse the buffer to get the next data from the network.
-        buffer.assign("Hello, World 2!");
+        buffer[0] = 'J';
 
         if (std::holds_alternative<Data>(parsed))
         {
@@ -61,10 +61,28 @@ int main(int, char *[])
         assert(buffer.c_str() != hello_world);
         auto parsed = Parser2::parse(buffer.c_str(), buffer.length());
 
-        std::cout << "Internal buffer len of string is: " << buffer.capacity() << " and len is " << buffer.length() << std::endl;
+        // As a pipeline, we reuse the buffer to get the next data from the network.
+        buffer[0] = 'J';
+
+        if (std::holds_alternative<Data2>(parsed))
+        {
+            const auto &data = std::get<Data2>(parsed);
+            // This is bad, because the internals of buffer might have allocated a new string or reused the old one.
+            // No matter what, we're on thin ice here and not guaranteed to get the data we expect or even worse
+            // we might get a crash or other undefined behavior.
+            //
+            // Valgrind doesn't catch this.
+            std::cout << "Parser2 data (should be \"Hello World!\"): " << data.name << std::endl;
+        }
+    }
+    {
+        auto buffer = std::string(hello_world);
+        assert(buffer.c_str() != hello_world);
+        auto parsed = Parser2::parse(buffer.c_str(), buffer.length());
 
         // As a pipeline, we reuse the buffer to get the next data from the network.
-        buffer.assign("Hello, World 2!");
+        // This should cause a reallocation of buffer
+        buffer.assign("The quick brown fox jumps over the lazy dog");
 
         if (std::holds_alternative<Data2>(parsed))
         {
@@ -82,6 +100,7 @@ int main(int, char *[])
         auto buffer = std::make_unique<std::string>(hello_world);
         assert(buffer->c_str() != hello_world);
         auto parsed = Parser::parse(buffer->c_str(), buffer->length());
+        // Completely deallocate the orignal buffer.
         buffer.reset();
 
         if (std::holds_alternative<Data>(parsed))
@@ -91,11 +110,12 @@ int main(int, char *[])
         }
     }
 
-    if (false)
+    if (true)
     {
         auto buffer = std::make_unique<std::string>(hello_world);
         assert(buffer->c_str() != hello_world);
         auto parsed = Parser2::parse(buffer->c_str(), buffer->length());
+        // Completely deallocate the orignal buffer.
         buffer.reset();
 
         if (std::holds_alternative<Data2>(parsed))
