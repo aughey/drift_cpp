@@ -4,7 +4,7 @@
 // Returns std::variant<Data, std::string>:
 //   - Data on success
 //   - error message (std::string) on failure
-std::variant<Data, std::string> Parser::parse(const char *buffer, std::size_t length)
+std::variant<DataOwned, std::string> Parser::parse_owned(const char *buffer, std::size_t length)
 {
     // First, check if all characters are in the ASCII range [0..127].
     for (std::size_t i = 0; i < length; ++i)
@@ -17,7 +17,7 @@ std::variant<Data, std::string> Parser::parse(const char *buffer, std::size_t le
     }
 
     // If it's all ASCII, construct the Data object
-    Data result;
+    DataOwned result;
     // Here we treat the entire buffer (length bytes) as the name.
     result.name.assign(buffer, length);
 
@@ -28,7 +28,7 @@ std::variant<Data, std::string> Parser::parse(const char *buffer, std::size_t le
 // Returns std::variant<Data, std::string>:
 //   - Data on success
 //   - error message (std::string) on failure
-std::variant<Data2, std::string> Parser2::parse(const char *buffer, std::size_t length)
+std::variant<DataShared, std::string> Parser::parse_shared(const char *buffer, std::size_t length)
 {
     // First, check if all characters are in the ASCII range [0..127].
     for (std::size_t i = 0; i < length; ++i)
@@ -41,8 +41,8 @@ std::variant<Data2, std::string> Parser2::parse(const char *buffer, std::size_t 
     }
 
     // If it's all ASCII, construct the Data object
-    Data2 result;
-    result.name = buffer;
+    DataShared result;
+    result.name = std::string_view(buffer, length);
 
     // Return the successfully parsed Data
     return result;

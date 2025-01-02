@@ -2,9 +2,14 @@
 #include <variant>
 #include <cstddef>
 
-struct Data
+struct DataOwned
 {
     std::string name;
+};
+
+struct DataShared
+{
+    std::string_view name;
 };
 
 class Parser
@@ -13,19 +18,9 @@ public:
     // Returns std::variant<Data, std::string>:
     //   - Data on success
     //   - error message (std::string) on failure
-    static std::variant<Data, std::string> parse(const char *buffer, std::size_t length);
-};
-
-struct Data2
-{
-    const char *name;
-};
-
-class Parser2
-{
-public:
+    static std::variant<DataOwned, std::string> parse_owned(const char *buffer, std::size_t length);
     // Returns std::variant<Data, std::string>:
     //   - Data on success
     //   - error message (std::string) on failure
-    static std::variant<Data2, std::string> parse(const char *buffer, std::size_t length);
+    static std::variant<DataShared, std::string> parse_shared(const char *buffer, std::size_t length);
 };

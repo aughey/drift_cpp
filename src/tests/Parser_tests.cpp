@@ -4,12 +4,12 @@
 TEST(ParserTests, BasicAssertions)
 {
     const char *buffer = "Hello, World!";
-    auto parsed = Parser::parse(buffer, strlen(buffer));
+    auto parsed = Parser::parse_owned(buffer, strlen(buffer));
 
-    ASSERT_TRUE(std::holds_alternative<Data>(parsed));
-    if (std::holds_alternative<Data>(parsed))
+    ASSERT_TRUE(std::holds_alternative<DataOwned>(parsed));
+    if (std::holds_alternative<DataOwned>(parsed))
     {
-        const Data &data = std::get<Data>(parsed);
+        const DataOwned &data = std::get<DataOwned>(parsed);
         ASSERT_EQ(data.name, "Hello, World!");
     }
     else
