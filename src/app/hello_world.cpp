@@ -4,6 +4,16 @@
 #include <memory>
 #include <assert.h>
 
+// Given cognitive drift, the interaction between the buffer and parser is not clear.
+// One of the following must be true for correct and safe operation:
+// 1. The developer get's lucky and doesn't break anything.
+// 2. The developer has a deep understanding of the parser and buffer interaction (already said isn't true)
+// 3. The developer has:
+//    a. Read and understands the documentation on the buffer
+//    b. Read and understands the documentation on the parser
+//    c. Read the documentation on the interaction between the buffer and parser
+//    d. The documentation is current, complete, and correct.
+
 int main(int, char *[])
 {
     const char *hello_world = "Hello, World!";
@@ -91,7 +101,7 @@ int main(int, char *[])
             // No matter what, we're on thin ice here and not guaranteed to get the data we expect or even worse
             // we might get a crash or other undefined behavior.
             //
-            // Valgrind doesn't catch this.
+            // Valgrind doesn't catch this if the buffer isn't reallocated.
             std::cout << "Parser data (should be \"Hello World!\"): " << data.name << std::endl;
         }
     }
