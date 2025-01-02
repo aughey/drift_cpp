@@ -35,7 +35,7 @@ fn main() -> anyhow::Result<()> {
         let parsed = {
             // vec_buffer is dropped after the block.
             let vec_buffer = hello_world_array.to_vec();
-            Parser::parse(vec_buffer.as_ref())?
+            Parser::parse_zerocopy(vec_buffer.as_ref())?
         };
         assert_eq!(parsed.name, hello_world_str);
     }

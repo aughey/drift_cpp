@@ -81,7 +81,7 @@ int main(int, char *[])
         auto parsed = Parser::parse_shared(buffer.c_str(), buffer.length());
 
         // As a pipeline, we reuse the buffer to get the next data from the network.
-        // This should cause a reallocation of buffer
+        // This should cause a reallocation of buffer because the new string is notably longer.
         buffer.assign("The quick brown fox jumps over the lazy dog");
 
         if (std::holds_alternative<DataShared>(parsed))
