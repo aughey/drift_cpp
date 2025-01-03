@@ -4,7 +4,7 @@
 #include <memory>
 #include <assert.h>
 
-// Given cognitive drift, the interaction between the buffer and parser is not clear.
+// Given cognitive drift, the interaction details between the buffer and parser is unclear.
 // One of the following must be true for correct and safe operation:
 // 1. The developer get's lucky and doesn't break anything.
 // 2. The developer has a deep understanding of the parser and buffer interaction (already said isn't true)
@@ -18,6 +18,7 @@ int main(int, char *[])
 {
     const char *hello_world = "Hello, World!";
 
+    // Basic usage of the parser, always works.
     {
         auto parsed = Parser::parse_owned(hello_world, strlen(hello_world));
         if (std::holds_alternative<DataOwned>(parsed))
@@ -27,6 +28,8 @@ int main(int, char *[])
         }
     }
 
+    // Using a string-owned parse of the data using owned parser.
+    // Owned parser always works no matter what the caller does.
     {
         auto buffer = std::string(hello_world);
         assert(buffer.c_str() != hello_world);
@@ -39,6 +42,8 @@ int main(int, char *[])
         }
     }
 
+    // Using a shared parser with a string-owned buffer.  The string buffer isn't
+    // freed or modified, so this works.  Win! (until it doesn't)
     {
         auto buffer = std::string(hello_world);
         assert(buffer.c_str() != hello_world);

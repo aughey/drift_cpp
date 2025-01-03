@@ -9,7 +9,8 @@ struct DataOwned
 
 struct DataShared
 {
-    std::string_view name;
+    const char *name;
+    //    std::string_view name;
 };
 
 class Parser
